@@ -18,7 +18,35 @@ dans le backoffice ClickCurac, sans jamais revenir sur l'hébergement.
   la messagerie du backoffice.
 - Un hébergement avec **PHP 7.4 ou plus récent** (avec cURL ou `allow_url_fopen`) et **Apache** qui lit les fichiers
   `.htaccess`. C'est le cas chez la plupart des hébergeurs (OVH, o2switch, Hostinger, IONOS, LWS…).
-- Le **certificat https** activé pour le domaine chez l'hébergeur (gratuit chez la plupart d'entre eux).
+- Le **certificat SSL (https)** activé pour le domaine chez l'hébergeur : voir [Certificat SSL](#certificat-ssl-https)
+  juste en dessous. **À faire avant de déposer les fichiers.**
+
+## Certificat SSL (https)
+
+Le certificat est fourni par **l'hébergeur de votre domaine**, pas par ClickCurac : les fichiers sont chez lui, c'est
+donc lui qui sécurise la connexion de vos visiteurs. La liaison entre votre hébergement et ClickCurac est, elle, déjà
+sécurisée par notre propre certificat.
+
+Presque tous les hébergeurs offrent un certificat **Let's Encrypt gratuit, renouvelé automatiquement**. Il suffit en
+général de l'activer une fois dans l'espace client :
+
+| Hébergeur | Où l'activer |
+|---|---|
+| OVHcloud | Hébergement → Multisite → le domaine → « SSL » coché, puis « Commander un certificat » (Let's Encrypt, gratuit) |
+| o2switch | cPanel → « Let's Encrypt SSL » (ou « AutoSSL ») |
+| Hostinger | hPanel → Sécurité → SSL → Installer (gratuit) |
+| IONOS | Domaines & SSL → le domaine → certificat SSL |
+| LWS | Espace client → l'hébergement → « SSL Let's Encrypt » |
+| Autre (cPanel, Plesk…) | « SSL/TLS », « Let's Encrypt » ou « AutoSSL » |
+
+Ouvrez ensuite `https://votre-domaine.fr` : le cadenas doit s'afficher (même avec l'ancien site encore en place).
+Seulement à ce moment, installez les fichiers ci-dessous.
+
+**Pourquoi c'est obligatoire :** le fichier `.htaccess` fait toujours passer les visiteurs en https (c'est aussi ce que
+demande Google). Sans certificat, ils verraient une alerte de sécurité dans leur navigateur.
+
+**Cloudflare :** choisissez le mode SSL **« Full »** (ou « Full (strict) »), pas « Flexible ». En mode « Flexible », la
+page se recharge en boucle.
 
 ## Installation
 
@@ -70,6 +98,17 @@ demandée est gardée : `menu.php?lang=en` ouvre la carte en anglais. Google sui
 gardent leur place dans les résultats.
 
 ## Questions fréquentes
+
+**Le navigateur affiche « Votre connexion n'est pas privée » ou une alerte de sécurité ?**
+Le certificat SSL n'est pas (encore) actif chez l'hébergeur : voir [Certificat SSL](#certificat-ssl-https). Après
+l'activation, il faut parfois attendre quelques minutes à quelques heures.
+
+**La page se recharge en boucle (« trop de redirections ») ?**
+Le plus souvent : Cloudflare en mode SSL « Flexible » (passez en « Full »), ou une ancienne règle de redirection de
+l'hébergeur vers `http://`. Retirez-la.
+
+**Faut-il renouveler le certificat ?**
+Non : les certificats Let's Encrypt de l'hébergeur se renouvellent seuls.
 
 **Faut-il refaire quelque chose quand je modifie ma vitrine ?**
 Non. Les fichiers lisent la vitrine en direct : textes, photos, horaires et cartes sont à jour dès que vous
