@@ -1,0 +1,17 @@
+# Site réalisé avec ClickCurac : toutes les pages passent par index.php (contenu géré dans le backoffice).
+# Fichier identique pour tous les restaurants.
+DirectoryIndex index.php
+Options -Indexes
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Installation avec Git : le dossier .git n'est jamais servi.
+  RewriteRule (^|/)\.git - [F,L]
+  # Toujours en https, sans « www ».
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L,QSA]
+</IfModule>
