@@ -19,14 +19,16 @@ if (! preg_match('/^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/', $host
 
 $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/');
 $lang = isset($_GET['lang']) && preg_match('/^[a-z]{2}$/', (string) $_GET['lang']) ? $_GET['lang'] : null;
-if ($path === 'sitemap.xml' || $path === 'robots.txt') {
+if (in_array($path, ['sitemap.xml', 'robots.txt', 'llms.txt', 'llms-full.txt', 'rss.xml'], true)) {
     $target = '/v/_d/'.$path;
 } elseif ($path === '' || preg_match('/^[a-z0-9-]{1,60}$/', $path)) {
     $params = array_filter(['lang' => $lang, 'm' => isset($_GET['m']) && ctype_digit((string) $_GET['m']) ? $_GET['m'] : null]);
     $target = '/v/_d/'.$path.($params ? '?'.http_build_query($params) : '');
 } elseif (preg_match('#^[A-Za-z0-9._~/-]{1,120}$#', $path)) {
-    // Ancienne adresse du site (QR code imprimé vers menu.php?lang=en…) : la vitrine dit vers quelle page aller.
-    $target = '/v/_d/_old?'.http_build_query(array_filter(['path' => $path, 'lang' => $lang]));
+    // Ancienne adresse du site (QR code imprimé vers menu.php?lang=en, article blog.php?id=60…) : la vitrine dit
+    // vers quelle page aller.
+    $id = isset($_GET['id']) && ctype_digit((string) $_GET['id']) ? $_GET['id'] : null;
+    $target = '/v/_d/_old?'.http_build_query(array_filter(['path' => $path, 'lang' => $lang, 'id' => $id]));
 } else {
     http_response_code(404);
     exit('Page introuvable.');
