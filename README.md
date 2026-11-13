@@ -97,6 +97,16 @@ backoffice, **Vitrine → Référencement → Anciennes adresses**, indiquez ver
 demandée est gardée : `menu.php?lang=en` ouvre la carte en anglais. Google suit aussi ces redirections : vos pages
 gardent leur place dans les résultats.
 
+## Mises à jour et sécurité
+
+- `index.php` (version 2) transmet toute l'adresse à ClickCurac : les nouveautés arrivent **sans redéposer le fichier**. La version installée est visible dans le backoffice (Vitrine → Réglages).
+- Le fichier n'écrit rien sur votre hébergement, n'exécute aucun code reçu et ne contacte que `backoffice.clickcurac.fr` (https vérifié). Le `.htaccess` refuse les fichiers cachés, les sauvegardes oubliées (`.sql`, `.zip`, `.env`…) et tout autre script PHP déposé dans le dossier.
+- Chaque version est **signée** par ClickCurac (`index.php.sig`, `.htaccess.sig`).
+
+### Mise à jour automatique (serveur géré en root)
+
+`clickcurac-vitrine-maj.sh` met à jour les sites choisis dans `/etc/clickcurac-vitrine.conf` (une ligne par site : `utilisateur version`, `-` pour ne jamais toucher un site). Il n'installe que des fichiers dont la signature est valide, écrit au nom de l'utilisateur du site (jamais en root) et garde l'ancien fichier dans `~/clickcurac-sauvegardes`. Il ne se met jamais à jour lui-même : relisez-le avant de l'installer.
+
 ## Questions fréquentes
 
 **Le navigateur affiche « Votre connexion n'est pas privée » ou une alerte de sécurité ?**

@@ -6,6 +6,17 @@ Options -Indexes
   RewriteEngine On
   # Installation avec Git : le dossier .git n'est jamais servi.
   RewriteRule (^|/)\.git - [F,L]
+  # Fichiers cachés (sauf .well-known, pour le certificat) et sauvegardes oubliées : jamais servis.
+  RewriteRule (^|/)\.(?!well-known/) - [F,L]
+  RewriteRule \.(sql|bak|old|orig|save|swp|nouveau|tar|gz|tgz|zip|7z|rar|env|log|ini|conf|sh|pem|key)$ - [F,L,NC]
+  # Aucun autre script que index.php (un fichier PHP oublié ou déposé par un pirate n'est jamais exécuté).
+  # (les anciennes adresses comme menu.php ou blog.php, qui n'existent plus en fichier, passent par index.php).
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteCond %{REQUEST_URI} !^/index\.php$
+  RewriteRule \.(php[0-9]?|phtml|phar|cgi|pl|py)$ - [F,L,NC]
+  # Nom de domaine valide seulement (pas de redirection vers un domaine inventé).
+  RewriteCond %{HTTP_HOST} !^[a-z0-9.-]+(:[0-9]+)?$ [NC]
+  RewriteRule ^ - [F,L]
   # Toujours en https, sans « www ».
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP:X-Forwarded-Proto} !=https
